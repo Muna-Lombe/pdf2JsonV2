@@ -1,0 +1,56 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Section {
+  content   Json?
+  createdAt DateTime              @default(now())
+  id        String                @id @default(cuid())
+  page      Page?                 @relation(fields: [pageId], references: [id])
+  pageId    String?
+  typeField EnumSectionTypeField?
+  updatedAt DateTime              @updatedAt
+}
+
+model PageJsonData {
+  createdAt DateTime @default(now())
+  data      Json?
+  id        String   @id @default(cuid())
+  page      Page?    @relation(fields: [pageId], references: [id])
+  pageId    String?
+  updatedAt DateTime @updatedAt
+}
+
+model Page {
+  contentType       EnumPageContentType?
+  createdAt         DateTime             @default(now())
+  fileInput         FileInput?           @relation(fields: [fileInputId], references: [id])
+  fileInputId       String?
+  id                String               @id @default(cuid())
+  pageJsonDataItems PageJsonData[]
+  pageNumber        Int?
+  sections          Section[]
+  updatedAt         DateTime             @updatedAt
+}
+
+model FileInput {
+  createdAt  DateTime  @default(now())
+  filePath   String?
+  id         String    @id @default(cuid())
+  pages      Page[]
+  updatedAt  DateTime  @updatedAt
+  uploadDate DateTime?
+}
+
+enum EnumSectionTypeField {
+  Option1
+}
+
+enum EnumPageContentType {
+  Option1
+}
